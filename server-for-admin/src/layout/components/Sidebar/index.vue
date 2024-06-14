@@ -4,17 +4,17 @@
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <!-- 左侧菜单组件 -->
       <el-menu
-        :default-active="activeMenu"
-        mode="vertical"
         :collapse-transition="false"
+        :default-active="activeMenu"
         :unique-opened="true"
+        mode="vertical"
       >
         <!-- 菜单中的每一项 -->
         <sidebar-item
           v-for="route in routes"
           :key="route.path"
-          :item="route"
           :base-path="route.path"
+          :item="route"
         />
       </el-menu>
     </el-scrollbar>
@@ -24,6 +24,7 @@
 <script>
 import Logo from './Logo'
 import SidebarItem from './SidebarItem'
+
 export default {
   components: { SidebarItem, Logo },
   computed: {

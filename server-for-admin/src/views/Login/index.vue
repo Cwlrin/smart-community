@@ -3,27 +3,24 @@
     <div class="bg" />
     <div class="box">
       <div class="title">智慧园区-登录</div>
-      <el-form ref="form">
+      <el-form ref="form" :model="loginForm" :rules="rules">
         <el-form-item
           label="账号"
           prop="username"
         >
-          <el-input />
+          <el-input v-model="loginForm.username" />
         </el-form-item>
-
         <el-form-item
           label="密码"
           prop="password"
         >
-          <el-input />
+          <el-input v-model="loginForm.password" />
         </el-form-item>
-
         <el-form-item prop="remember">
           <el-checkbox>记住我</el-checkbox>
         </el-form-item>
-
         <el-form-item>
-          <el-button type="primary" class="login_btn">登录</el-button>
+          <el-button class="login_btn" type="primary" @click="handleLogin">登录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -31,12 +28,35 @@
 </template>
 
 <script>
-
 export default {
-  name: 'Login'
-
+  name: 'Login',
+  data() {
+    return {
+      loginForm: {
+        username: '',
+        password: ''
+      },
+      rules: {
+        username: [
+          { required: true, message: '用户名不可为空', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '密码不可为空', trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  methods: {
+    handleLogin() {
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          // TODO
+          console.log('登录')
+        }
+      })
+    }
+  }
 }
-
 </script>
 
 <style scoped lang="scss">
@@ -46,8 +66,7 @@ export default {
   .bg {
     width: 60vw;
     height: 100vh;
-    background: url('~@/assets/login-bg.svg') no-repeat;
-    background-position: right top;
+    background: url('~@/assets/login-bg.svg') no-repeat right top;
     background-size: cover;
   }
   .box {
