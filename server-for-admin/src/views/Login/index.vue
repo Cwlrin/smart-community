@@ -28,6 +28,8 @@
 </template>
 
 <script>
+import { loginAPI } from '@/api/user'
+
 export default {
   name: 'Login',
   data() {
@@ -48,11 +50,9 @@ export default {
   },
   methods: {
     handleLogin() {
-      this.$refs.form.validate((valid) => {
-        if (valid) {
-          // TODO
-          console.log('登录')
-        }
+      this.$refs.form.validate(async(flag) => {
+        if (!flag) return
+        await this.$store.dispatch('user/loginAction', this.loginForm)
       })
     }
   }

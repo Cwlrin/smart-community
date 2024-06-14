@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 /**
  * @description: 登录函数
- * @param {*} data { mobile,password}
+ * @param {*} data { mobile,password }
  * @return {*} promise
  */
 export function loginAPI(data) {
