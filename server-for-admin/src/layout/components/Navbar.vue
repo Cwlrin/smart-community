@@ -8,10 +8,10 @@
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
-            <el-dropdown-item> 首页 </el-dropdown-item>
+            <el-dropdown-item> 首页</el-dropdown-item>
           </router-link>
           <a target="_blank">
-            <el-dropdown-item> 项目地址 </el-dropdown-item>
+            <el-dropdown-item> 项目地址</el-dropdown-item>
           </a>
           <el-dropdown-item divided @click.native="logout">
             <span style="display: block">退出登录</span>
@@ -27,6 +27,7 @@ export default {
   methods: {
     // 退出登录
     logout() {
+      this.$store.commit('user/removeToken')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
   }
@@ -39,6 +40,7 @@ export default {
   line-height: 64px;
   overflow: hidden;
   position: relative;
+
   .app-breadcrumb {
     display: inline-block;
     font-size: 18px;
@@ -110,10 +112,12 @@ export default {
 
     .avatar-container {
       margin-right: 30px;
+
       .avatar-wrapper {
         margin-top: 5px;
         position: relative;
-        .name{
+
+        .name {
           font-weight: 600;
           cursor: pointer;
         }

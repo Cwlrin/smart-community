@@ -1,5 +1,17 @@
 <script>
+import { getIndustryAPI } from '@/api/user'
 
+export default {
+  methods: {
+    created() {
+      this.getIndustry()
+    },
+    async getIndustry() {
+      const res = await getIndustryAPI()
+      console.log(res)
+    }
+  }
+}
 </script>
 
 <template>

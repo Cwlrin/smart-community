@@ -66,9 +66,13 @@ export default {
           if (this.rememberMe) {
             localStorage.setItem(FORM_KEY, JSON.stringify(this.loginForm))
           } else {
-            localStorage.setItem(FORM_KEY)
+            localStorage.removeItem(FORM_KEY)
           }
-          this.$router.push('/')
+          if (this.$route.query.redirect) {
+            this.$router.push(this.$route.query.redirect)
+          } else {
+            this.$router.push('/')
+          }
         } catch (error) {
           this.$message.error(error.response.data.msg)
         }

@@ -10,3 +10,9 @@ export function loginAPI(data) {
     url: '/park/login', method: 'POST', data
   })
 }
+
+export function getIndustryAPI() {
+  return request({
+    url: '/park/industry'
+  })
+}

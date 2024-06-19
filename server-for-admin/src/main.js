@@ -8,6 +8,7 @@ import store from './store'
 import router from './router'
 // 注册svg
 import '@/icons'
+import './permission'
 
 Vue.use(ElementUI)
 
