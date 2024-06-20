@@ -19,13 +19,14 @@
     </div>
     <!-- 表格区域 -->
     <div class="table">
-      <el-table :data="[]" style="width: 100%">
-        <el-table-column label="序号" type="index" />
-        <el-table-column label="车主名称" />
-        <el-table-column label="联系方式" />
-        <el-table-column label="车牌号码" />
-        <el-table-column label="车辆品牌" />
-        <el-table-column label="剩余有效天数" />
+      <el-table :data="list" style="width: 100%">
+        <el-table-column label="序号" type="index" :index="indexMethod" />
+        <el-table-column label="车主名称" prop="personName" />
+        <el-table-column label="联系方式" prop="phoneNumber" />
+        <el-table-column label="车牌号码" prop="carNumber" />
+        <el-table-column label="车辆品牌" prop="carBrand" />
+        <el-table-column label="剩余有效天数" prop="totalEffectiveDate" />
+        <el-table-column :formatter="formatStatus" label="状态" prop="cardStatues" />
         <el-table-column fixed="right" label="操作" width="180">
           <template #default="scope">
             <el-button size="mini" type="text">续费</el-button>
@@ -38,8 +39,13 @@
     </div>
     <div class="page-container">
       <el-pagination
-        :total="0"
-        layout="total, prev, pager, next"
+        :current-page="params.page"
+        :page-size="params.pageSize"
+        :page-sizes="[10,20,30,40]"
+        :total="total"
+        layout="total, size,prev, pager, next,jumper"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
       />
     </div>
     <!-- 添加楼宇 -->
@@ -76,6 +82,7 @@
 import { getCardListAPI } from '@/api/card'
 
 export default {
+  name: 'Card',
   data() {
     return {
       params: {
@@ -84,16 +91,37 @@ export default {
         carNumber: '',
         personName: '',
         cardStatus: null
-      }
+      },
+      total: 0,
+      list: []
     }
   },
   created() {
     this.getCardList()
   },
   methods: {
+    indexMethod(index) {
+      return (this.params.page - 1) * this.params.pageSize + index + 1
+    },
+    formatStatus(row, column, cellValue, index) {
+      const MAP = {
+        0: '可用',
+        1: '不可用'
+      }
+      return MAP[cellValue]
+    },
     async getCardList() {
       const res = await getCardListAPI(this.params)
-      console.log(res)
+      this.list = res.data.rows
+      this.total = res.data.total
+    },
+    handleSizeChange(val) {
+      this.params.pageSize = val
+      this.getCardList()
+    },
+    handleCurrentChange(val) {
+      this.params.page = val
+      this.getCardList()
     }
   }
 }
