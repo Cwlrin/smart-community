@@ -3,14 +3,14 @@
     <!-- 搜索区域 -->
     <div class="search-container">
       <span class="search-label">车牌号码：</span>
-      <el-input class="search-main" clearable placeholder="请输入内容" />
+      <el-input v-model="params.carNumber" class="search-main" clearable placeholder="请输入内容" />
       <span class="search-label">车主姓名：</span>
-      <el-input class="search-main" clearable placeholder="请输入内容" />
+      <el-input v-model="params.personName" class="search-main" clearable placeholder="请输入内容" />
       <span class="search-label">状态：</span>
       <el-select v-model="params.cardStatus">
-        <el-option v-for="item in []" :key="item.id" />
+        <el-option v-for="item in statusList" :key="item.value" :label="item.text" :value="item.value" />
       </el-select>
-      <el-button class="search-btn" type="primary">查询</el-button>
+      <el-button class="search-btn" type="primary" @click="search">查询</el-button>
     </div>
     <!-- 新增删除操作区域 -->
     <div class="create-container">
@@ -20,7 +20,7 @@
     <!-- 表格区域 -->
     <div class="table">
       <el-table :data="list" style="width: 100%">
-        <el-table-column label="序号" type="index" :index="indexMethod" />
+        <el-table-column :index="indexMethod" label="序号" type="index" />
         <el-table-column label="车主名称" prop="personName" />
         <el-table-column label="联系方式" prop="phoneNumber" />
         <el-table-column label="车牌号码" prop="carNumber" />
@@ -93,13 +93,27 @@ export default {
         cardStatus: null
       },
       total: 0,
-      list: []
+      list: [],
+      statusList: [{
+        text: '全部',
+        value: null
+      }, {
+        text: '可用',
+        value: 0
+      }, {
+        text: '不可用',
+        value: 1
+      }]
     }
   },
   created() {
     this.getCardList()
   },
   methods: {
+    search() {
+      this.params.page = 1
+      this.getCardList()
+    },
     indexMethod(index) {
       return (this.params.page - 1) * this.params.pageSize + index + 1
     },
