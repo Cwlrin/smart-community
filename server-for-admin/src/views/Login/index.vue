@@ -55,6 +55,7 @@ export default {
       const { username, password } = JSON.parse(loginData)
       this.loginForm.username = username
       this.loginForm.password = password
+      this.formData.remember = true
     }
   },
   methods: {
