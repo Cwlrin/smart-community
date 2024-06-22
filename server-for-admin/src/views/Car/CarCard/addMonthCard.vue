@@ -7,18 +7,18 @@
       <div class="form-container">
         <div class="title">车辆信息</div>
         <div class="form">
-          <el-form label-width="100px">
-            <el-form-item label="车主姓名">
-              <el-input />
+          <el-form :model="carInForm" :rules="carInfoRules" label-width="100px">
+            <el-form-item label="车主姓名" prop="personName">
+              <el-input v-model="carInForm.personName" />
             </el-form-item>
-            <el-form-item label="联系方式">
-              <el-input />
+            <el-form-item label="联系方式" prop="phoneNumber">
+              <el-input v-model="carInForm.phoneNumber" />
             </el-form-item>
-            <el-form-item label="车辆号码">
-              <el-input />
+            <el-form-item label="车辆号码" prop="carNumber">
+              <el-input v-model="carInForm.carNumber" />
             </el-form-item>
-            <el-form-item label="企业联系人">
-              <el-input />
+            <el-form-item label="车辆品牌" prop="carBrand">
+              <el-input v-model="carInForm.carBrand" />
             </el-form-item>
           </el-form>
         </div>
@@ -58,7 +58,37 @@
 </template>
 
 <script>
-export default {}
+export default {
+  name: 'AddMonthCard',
+  data() {
+    return {
+      carInForm: {
+        personName: '',
+        phoneNumber: '',
+        carNumber: '',
+        carBrand: ''
+      },
+      carInfoRules: {
+        personName: [{ required: true, message: '请输入车主姓名', trigger: 'blur' }],
+        phoneNumber: [{ required: true, message: '请输入联系方式', trigger: 'blur' },
+          { pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确', trigger: 'blur' }],
+        carNumber: [{ required: true, message: '请输入车辆号码', trigger: 'blur' },
+          { validator: this.validatorCarNumber, trigger: 'blur' }],
+        carBrand: [{ required: true, message: '请输入车辆品牌', trigger: 'blur' }]
+      }
+    }
+  },
+  methods: {
+    validatorCarNumber(rule, value, callback) {
+      const plateNumberRegex = /^[\u4E00-\u9FA5][\da-zA-Z]{6}$/
+      if (plateNumberRegex.test(value)) {
+        callback()
+      } else {
+        callback(new Error('请输入正确的车牌号'))
+      }
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
