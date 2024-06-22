@@ -7,18 +7,18 @@
       <div class="form-container">
         <div class="title">车辆信息</div>
         <div class="form">
-          <el-form :model="carInForm" :rules="carInfoRules" label-width="100px">
+          <el-form ref="carInfoForm" :model="carInfoForm" :rules="carInfoRules" label-width="100px">
             <el-form-item label="车主姓名" prop="personName">
-              <el-input v-model="carInForm.personName" />
+              <el-input v-model="carInfoForm.personName" />
             </el-form-item>
             <el-form-item label="联系方式" prop="phoneNumber">
-              <el-input v-model="carInForm.phoneNumber" />
+              <el-input v-model="carInfoForm.phoneNumber" />
             </el-form-item>
             <el-form-item label="车辆号码" prop="carNumber">
-              <el-input v-model="carInForm.carNumber" />
+              <el-input v-model="carInfoForm.carNumber" />
             </el-form-item>
             <el-form-item label="车辆品牌" prop="carBrand">
-              <el-input v-model="carInForm.carBrand" />
+              <el-input v-model="carInfoForm.carBrand" />
             </el-form-item>
           </el-form>
         </div>
@@ -26,20 +26,29 @@
       <div class="form-container">
         <div class="title">最新一次月卡缴费信息</div>
         <div class="form">
-          <el-form label-width="100px">
+          <el-form :model="feeInfoForm" :rules="feeFormRules" label-width="100px">
             <el-form-item label="有效日期">
-              <el-input />
+              <el-date-picker
+                v-model="feeInfoForm.payTime"
+                end-placeholder="结束日期"
+                range-separator="至"
+                start-placeholder="开始日期"
+                type="daterange"
+                format="yyyy/MM/dd"
+                value-format="yyyy-MM-dd"
+              />
             </el-form-item>
             <el-form-item label="支付金额">
-              <el-input />
+              <el-input v-model="feeInfoForm.paymentAmount" />
             </el-form-item>
             <el-form-item label="支付方式">
-              <el-select>
+              <el-select v-model="feeInfoForm.paymentMethod">
                 <el-option
-                  v-for="item in [{}]"
-                  :key="item.industryCode"
-                  :label="item.industryName"
-                  :value="item.industryCode"
+                  v-for="item in payMethodList"
+                  :key="item.id"
+                  ref="feeInfoForm"
+                  :label="item.name"
+                  :value="item.id"
                 />
               </el-select>
             </el-form-item>
@@ -50,19 +59,21 @@
     </main>
     <footer class="add-footer">
       <div class="btn-container">
-        <el-button>重置</el-button>
-        <el-button type="primary">确定</el-button>
+        <el-button @click="resetForm">重置</el-button>
+        <el-button type="primary" @click="confirmAdd">确定</el-button>
       </div>
     </footer>
   </div>
 </template>
 
 <script>
+import { addCardAPI } from '@/api/card'
+
 export default {
   name: 'AddMonthCard',
   data() {
     return {
-      carInForm: {
+      carInfoForm: {
         personName: '',
         phoneNumber: '',
         carNumber: '',
@@ -75,10 +86,47 @@ export default {
         carNumber: [{ required: true, message: '请输入车辆号码', trigger: 'blur' },
           { validator: this.validatorCarNumber, trigger: 'blur' }],
         carBrand: [{ required: true, message: '请输入车辆品牌', trigger: 'blur' }]
-      }
+      },
+      feeInfoForm: {
+        payTime: [],
+        paymentAmount: '',
+        paymentMethod: ''
+      },
+      feeFormRules: {
+        payTime: [{ required: true, message: '有效日期不可为空' }],
+        paymentAmount: [{ required: true, message: '支付金额不可为空', trigger: 'blur' }],
+        paymentMethod: [{ required: true, message: '支付方式不可为空', trigger: 'change' }]
+      },
+      payMethodList: [
+        { id: 'Alipay', name: '支付宝' },
+        { id: 'WeChat', name: '微信' },
+        { id: 'Cash', name: '线下' }
+      ]
     }
   },
   methods: {
+    resetForm() {
+      this.$refs.carInfoForm.resetFields()
+      this.$refs.feeInfoForm.resetFields()
+    },
+    confirmAdd() {
+      this.$refs.carInfoForm.validate((flag) => {
+        if (!flag) return
+        this.$refs.feeInfoForm.validate(async(flag) => {
+          if (!flag) return
+          const requestData = {
+            ...this.carInfoForm,
+            ...this.feeInfoForm,
+            cardStartDate: this.feeInfoForm.payTime[0],
+            cardEndDate: this.feeInfoForm.payTime[1]
+          }
+          delete requestData.payTime
+          await addCardAPI(requestData)
+          this.$message.success('月卡添加成功')
+          this.$router.back()
+        })
+      })
+    },
     validatorCarNumber(rule, value, callback) {
       const plateNumberRegex = /^[\u4E00-\u9FA5][\da-zA-Z]{6}$/
       if (plateNumberRegex.test(value)) {
