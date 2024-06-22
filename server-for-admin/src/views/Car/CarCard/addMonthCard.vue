@@ -1,7 +1,7 @@
 <template>
   <div class="add-card">
     <header class="add-header">
-      <el-page-header content="增加月卡" @back="$router.back()" />
+      <el-page-header content="id?'增加月卡':'增加月卡'" @back="$router.back()" />
     </header>
     <main class="add-main">
       <div class="form-container">
@@ -31,10 +31,10 @@
               <el-date-picker
                 v-model="feeInfoForm.payTime"
                 end-placeholder="结束日期"
+                format="yyyy/MM/dd"
                 range-separator="至"
                 start-placeholder="开始日期"
                 type="daterange"
-                format="yyyy/MM/dd"
                 value-format="yyyy-MM-dd"
               />
             </el-form-item>
@@ -104,7 +104,29 @@ export default {
       ]
     }
   },
+  computed: {
+    id() {
+      return this.$route.query.id
+    }
+  },
+  created() {
+    if (id) {
+      this.getCardDetail()
+    }
+  },
   methods: {
+    async getCardDetail() {
+      const { data } = await getCardDetailAPI(this.id)
+      const { personName, phoneNumber, carNumber, carBrand, carInfoId } = data
+      this.carInfoForm = { personName, phoneNumber, carNumber, carBrand, carInfoId }
+      const { cardStartDate, cardEndDate, paymentAmount, paymentMethod, rechargeId } = data
+      this.feeInfoForm = {
+        paymentAmount,
+        paymentMethod,
+        rechargeId,
+        payTime: [cardStartDate, cardEndDate]
+      }
+    },
     resetForm() {
       this.$refs.carInfoForm.resetFields()
       this.$refs.feeInfoForm.resetFields()
@@ -121,8 +143,13 @@ export default {
             cardEndDate: this.feeInfoForm.payTime[1]
           }
           delete requestData.payTime
-          await addCardAPI(requestData)
-          this.$message.success('月卡添加成功')
+          if (this.id) {
+            await editCardAPI(requestData)
+            this.$message.success('月卡修改成功')
+          } else {
+            await addCardAPI(requestData)
+            this.$message.success('月卡添加成功')
+          }
           this.$router.back()
         })
       })

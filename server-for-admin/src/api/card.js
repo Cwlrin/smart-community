@@ -21,3 +21,25 @@ export function addCardAPI(data) {
     url: '/parking/card', method: 'POST', data
   })
 }
+
+/**
+ * 获取月卡详情
+ * @param {*} id
+ * @returns
+ */
+export function getCardDetailAPI(id) {
+  return request({
+    url: `/parking/card/detail/${id}`
+  })
+}
+
+/**
+ * 更新月卡
+ * @param {*} data
+ * @returns
+ */
+export function editCardAPI(data) {
+  return request({
+    url: '/parking/card/edit', method: 'PUT', data
+  })
+}
