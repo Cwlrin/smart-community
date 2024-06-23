@@ -25,7 +25,7 @@ export function addCardAPI(data) {
 /**
  * 获取月卡详情
  * @param {*} id
- * @returns
+ * @returns {*}
  */
 export function getCardDetailAPI(id) {
   return request({
@@ -36,10 +36,21 @@ export function getCardDetailAPI(id) {
 /**
  * 更新月卡
  * @param {*} data
- * @returns
+ * @returns {*}
  */
 export function editCardAPI(data) {
   return request({
     url: '/parking/card/edit', method: 'PUT', data
+  })
+}
+
+/**
+ * 删除月卡
+ * @param {*} id
+ * @returns {*}
+ */
+export function deleteCardAPI(id) {
+  return request({
+    url: `/parking/card/${id}`, method: 'DELETE'
   })
 }

@@ -15,11 +15,15 @@
     <!-- 新增删除操作区域 -->
     <div class="create-container">
       <el-button type="primary" @click="$router.push('/car/addMonthCard')">添加月卡</el-button>
-      <el-button>批量删除</el-button>
+      <el-button @click="batchDeleteCard">批量删除</el-button>
     </div>
     <!-- 表格区域 -->
     <div class="table">
-      <el-table :data="list" style="width: 100%">
+      <el-table :data="list" style="width: 100%" @selection-change="handleSelectionChange">
+        <el-table-column
+          type="selection"
+          width="55"
+        />
         <el-table-column :index="indexMethod" label="序号" type="index" />
         <el-table-column label="车主名称" prop="personName" />
         <el-table-column label="联系方式" prop="phoneNumber" />
@@ -32,7 +36,7 @@
             <el-button size="mini" type="text">续费</el-button>
             <el-button size="mini" type="text">查看</el-button>
             <el-button size="mini" type="text" @click="editCard(scope.row.id)">编辑</el-button>
-            <el-button size="mini" type="text">删除</el-button>
+            <el-button size="mini" type="text" @click="deleteCard(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -79,7 +83,7 @@
 </template>
 
 <script>
-import { getCardListAPI } from '@/api/card'
+import { getCardListAPI, deleteCardAPI } from '@/api/card'
 
 export default {
   name: 'Card',
@@ -103,13 +107,44 @@ export default {
       }, {
         text: '不可用',
         value: 1
-      }]
+      }],
+      selectionVal: []
     }
   },
   created() {
     this.getCardList()
   },
   methods: {
+    batchDeleteCard() {
+      if (this.selectionVal.length <= 0) {
+        this.$message.warning('请先选择要删除的数据')
+        return
+      }
+      const ids = this.selectionVal.map(item => {
+        return item.id
+      })
+      this.$confirm('此操作将永久删除该数据, 是否继续?', '提示').then(async() => {
+        await deleteCardAPI(ids.join(','))
+        this.$message.success('批量删除成功')
+        this.getCardList()
+      }).catch(() => {})
+    },
+    handleSelectionChange(val) {
+      this.selectionVal = val
+    },
+    deleteCard(id) {
+      this.$confirm('此操作将永久删除该数据, 是否继续?', '提示',
+        { type: 'warning' }).then(async() => {
+        await deleteCardAPI(id)
+        this.$message.success('删除成功')
+        if (this.list.length === 1 && this.params.page > 1) {
+          this.params.page--
+        }
+        this.getCardList()
+      }).catch(() => {
+        console.log('点击取消')
+      })
+    },
     editCard(id) {
       this.$router.push({
         path: '/cardAdd',
