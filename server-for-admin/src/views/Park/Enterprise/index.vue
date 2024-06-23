@@ -3,15 +3,15 @@
     <!-- 搜索区域 -->
     <div class="search-container">
       <div class="search-label">企业名称：</div>
-      <el-input class="search-main" clearable placeholder="请输入内容" />
-      <el-button type="primary">查询</el-button>
+      <el-input v-model="params.name" class="search-main" clearable placeholder="请输入内容" @clear="clearSearch" />
+      <el-button type="primary" @click="search">查询</el-button>
     </div>
     <div class="create-container">
       <el-button type="primary">添加企业</el-button>
     </div>
     <!-- 表格区域 -->
     <div class="table">
-      <el-table :data="enterpriseList" style="width: 100%">
+      <el-table :data="enterpriseList" :index="indexMethod" style="width: 100%">
         <el-table-column label="序号" type="index" />
         <el-table-column label="企业名称" prop="name" width="320" />
         <el-table-column label="联系人" prop="contact" />
@@ -31,9 +31,9 @@
     </div>
     <div class="page-container">
       <el-pagination
-        layout="total, prev, pager, next"
-        :total="total"
         :page-size="params.pageSize"
+        :total="total"
+        layout="total, prev, pager, next"
         @current-change="handleChange"
       />
     </div>
@@ -60,6 +60,17 @@ export default {
     this.getEnterpriseList()
   },
   methods: {
+    clearSearch() {
+      this.params.name = ''
+      this.getEnterpriseList()
+    },
+    search() {
+      this.params.page = 1
+      this.getEnterpriseList()
+    },
+    indexMethod(index) {
+      return (this.params.page - 1) * this.params.pageSize + index + 1
+    },
     handleChange(val) {
       this.params.page = val
       this.getEnterpriseList()
